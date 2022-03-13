@@ -14,8 +14,8 @@ class State(BaseModel, Base):
 		cities = relationship("City",  backref="state", cascade="all, delete")
 	else:	
 		@property
-		def cities(self)
-			"""" Getter attribute to retrieve City object ""
+		def cities(self):
+			"""" Getter attribute to retrieve City object """
 			city_list = []
 			for city in models.storage.all('City').values():
 				if city.state_id == self.id:
