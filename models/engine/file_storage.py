@@ -60,10 +60,8 @@ class FileStorage:
 
 	def delete(self, obj=None):
 		"""Deletes an object from storage dictionary"""
-		if obj == None:
-			pass
-		else: 
-			for key, val in FileStorage.__objects.items():
-				if obj.id == val.id:
-					FileStorage.__objects.pop(key)
-					return
+		if obj:
+            for key, val in (FileStorage.__objects).items():
+                if obj.id == val.id:
+                    (FileStorage.__objects).pop(key)
+                    return
