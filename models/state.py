@@ -10,9 +10,9 @@ class State(BaseModel, Base):
 	""" State class """
 	__tablename__ = 'states'
 	name =  Column(String(128), nullable=False)
-	if getenv('HBNB_TYPE_STORAGE') == 'db':
-		cities = relationship("City",  backref="state", cascade="all, delete")
-	else:	
+	cities = relationship("City",  back_populates="state", cascade="all, delete-orphan", single_parent=True)
+	
+	if getenv('HBNB_TYPE_STORAGE') != 'db':
 		@property
 		def cities(self):
 			"""" Getter attribute to retrieve City object """

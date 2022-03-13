@@ -4,76 +4,80 @@ import json
 from os import getenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-
+from models.base_model import BaseModel, Base
+from models.state import State
+from models.city import City
+from models.user import User
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 
 class DBStorage:
-	"""This class manages storage of hbnb models in a database"""
-	__engine = None
-	__session = None
+    """This class manages storage of hbnb models in a database"""
+    __engine = None
+    __session = None
 
-	classes = {"BaseModel": BaseModel,
-                   "User": User,
-                   "State": State,
-                   "City": City,
-                   "Amenity": Amenity,
-                   "Place": Place,
-                   "Review": Review
-				}
+    classes = {"BaseModel": BaseModel,
+               "User": User,
+               "State": State,
+               "City": City,
+               "Amenity": Amenity,
+               "Place": Place,
+               "Review": Review}
 
-	def __init__(self):
-		"""Instantiates a new model"""
+    def __init__(self):
+        """Instantiates a new model"""
 
-		self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.\
-									format(getenv(HBNB_MYSQL_USER),\
-										getenv(HBNB_MYSQL_PWD),\
-										getenv(HBNB_MYSQL_HOST),\
-										getenv(HBNB_MYSQL_DB),\
-										pool_pre_ping=True)
-		if getenv("HBNB_ENV") == "test":
-            Base.metadata.drop_all(self.__engine)
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
+                                      format(getenv('HBNB_MYSQL_USER'),
+                                             getenv('HBNB_MYSQL_PWD'),
+                                             getenv('HBNB_MYSQL_HOST'),
+                                             getenv('HBNB_MYSQL_DB')),
+                                      pool_pre_ping=True)
 
-	def all(self, cls=None):
-		"""Returns a dictionary of models currently in storage"""
-		if cls:
+    def all(self, cls=None):
+        """Returns a dictionary of models currently in storage"""
+        if cls:
             objs = self.__session.query(self.classes[cls])
-		else:
-			objs = self.__session.query(State).all()
+        else:
+            objs = self.__session.query(State).all()
             objs.extend(self.__session.query(City).all())
             objs.extend(self.__session.query(User).all())
             objs.extend(self.__session.query(Place).all())
             objs.extend(self.__session.query(Review).all())
             objs.extend(self.__session.query(Amenity).all())
-		
-		dict_objs = {}
-		for obj in objs:
-			key = '{}.{}'.format(type(obj).__name__, obj.id)
+
+        dict_objs = {}
+        for obj in objs:
+            key = '{}.{}'.format(type(obj).__name__, obj.id)
             dict_objs[key] = obj
         return dict_objs
 
+    def new(self, obj):
+        """Adds new object to storage dictionary"""
+        self.__session.add(obj)
 
-	def new(self, obj):
-		"""Adds new object to storage dictionary"""
-		self.__session.add(obj)
-
-	def save(self):
+    def save(self):
         """Commit all changes to the current database session."""
         self.__session.commit()
 
-	def reload(self):
-		"""Loads storage dictionary from file"""
+    def reload(self):
+        """Loads storage dictionary from file"""
+        if getenv("HBNB_ENV") == "test":
+            Base.metadata.drop_all(self.__engine)
+        Base.metadata.create_all(self.__engine)
+        session_factory = sessionmaker(bind=self.__engine,
+                                       expire_on_commit=False)
+        Session = scoped_session(session_factory)
+        self.__session = Session()
 
-		Base.metadata.create_all(self.__engine)
-		session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
-		Session = scoped_session(session_factory)
-		self.__session = Session()
+    def delete(self, obj=None):
+        """Deletes an object from storage dictionary"""
+        if obj is None:
+            pass
+        else:
+            self.__session.delete(obj)
 
-	def delete(self, obj=None):
-		"""Deletes an object from storage dictionary"""
-		if obj == None:
-			pass
-		else: 
-			self.__session.delete(obj)
-
-	def close(self):
+    def close(self):
         """Removes the session"""
         self.__session.close()
