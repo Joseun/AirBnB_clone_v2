@@ -24,8 +24,8 @@ if getenv("HBNB_TYPE_STORAGE") == 'db':
         number_bathrooms = Column(Integer, default=0, nullable=False)
         max_guest = Column(Integer, default=0, nullable=False)
         price_by_night = Column(Integer, default=0, nullable=False)
-        latitude = Column(Float, nullable=False)
-        longitude = Column(Float, nullable=False)
+        latitude = Column(Float, default='NULL')
+        longitude = Column(Float, default='NULL')
         amenities = relationship('Amenity', secondary = 'place_amenity', viewonly=False, back_populates = 'place_amenities')
         reviews = relationship("Review", backref = "place", cascade='all, delete')
 
