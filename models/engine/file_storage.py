@@ -13,9 +13,12 @@ class FileStorage:
 		if cls == None:
 			return FileStorage.__objects
 		else:
+			cls_objs = {}
 			for k, v in FileStorage.__objects.items():
-				if cls == k.split(.)[0]:
-					return FileStorage.__objects[k]
+				if cls.__name__ == k.split('.', 1)[0]:
+					cls_objs[k] = v
+					return cls_objs
+
 
 
 	def new(self, obj):
@@ -60,10 +63,7 @@ class FileStorage:
 		if obj == None:
 			pass
 		else: 
-			with open(FileStorage.__file_path, 'w') as f:
-				temp = {}
-				temp.update(FileStorage.__objects)
-				temp.pop(obj)
-				for key, val in temp.items():
-					temp[key] = val.to_dict()
-				json.dump(temp, f)
+			for key, val in FileStorage.__objects.items():
+				if obj.id == val.id:
+					FileStorage.__objects.pop(key)
+					return
