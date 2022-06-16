@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from models import storage
+
 
 Base = declarative_base()
 
@@ -23,6 +23,8 @@ class BaseModel:
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
         else:
+            from models import storage
+            
             try:
                 u = 'updated_at'
                 c = 'created_at'
