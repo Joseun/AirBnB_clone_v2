@@ -10,10 +10,12 @@ def hello_holberton():
     """Returns a string at the root route"""
     return 'Hello HBNB!'
 
+
 @app.route('/hbnb', strict_slashes=False)
 def display_hbnb():
     """Returns a string at the /hbnb route"""
-    return 'HBNB!'
+    return 'HBNB'
+
 
 @app.route('/c/<string:text>', strict_slashes=False)
 def display_c(text):

@@ -10,16 +10,19 @@ def hello_holberton():
     """Returns a string at the root route"""
     return 'Hello HBNB!'
 
+
 @app.route('/hbnb', strict_slashes=False)
 def display_hbnb():
     """Returns a string at the /hbnb route"""
-    return 'HBNB!'
+    return 'HBNB'
+
 
 @app.route('/c/<string:text>', strict_slashes=False)
 def display_c(text):
     """Displays 'C' followed by the value of <text>"""
     text = text.replace("_", " ")
     return "C {}".format(text)
+
 
 @app.route("/python", strict_slashes=False)
 @app.route("/python/<string:text>", strict_slashes=False)
@@ -30,6 +33,7 @@ def python(text="is cool"):
     text = text.replace("_", " ")
     return "Python {}".format(text)
 
+
 @app.route("/number/<int:n>", strict_slashes=False)
 def number(n):
     """Displays 'n is a number' only if n is an integer."""
@@ -39,6 +43,7 @@ def number(n):
 def number_template(n):
     """Displays a HTML page only if n is an integer"""
     return render_template('5-number.html', n=n)
+
 
 @app.route("/number_odd_or_even/<int:n>", strict_slashes=False)
 def number_odd_or_even(n):
