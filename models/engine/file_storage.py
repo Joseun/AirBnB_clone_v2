@@ -19,8 +19,6 @@ class FileStorage:
 					cls_objs[k] = v
 					return cls_objs
 
-
-
 	def new(self, obj):
 		"""Adds new object to storage dictionary"""
 		self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
@@ -65,3 +63,7 @@ class FileStorage:
 				if obj.id == val.id:
 					FileStorage.__objects.pop(key)
 					return
+	
+	def close(self):
+		"""Call the reload method."""
+		self.reload()
