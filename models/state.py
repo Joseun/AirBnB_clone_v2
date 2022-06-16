@@ -19,8 +19,10 @@ class State(BaseModel, Base):
 		@property
 		def cities(self):
 			"""" Getter attribute to retrieve City object """
+			from models import storage
+
 			city_list = []
-			for city in models.storage.all('City').values():
+			for city in storage.all('City').values():
 				if city.state_id == self.id:
 					city_list.append(city)
 			return city_list
