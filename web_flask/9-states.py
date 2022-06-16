@@ -22,6 +22,7 @@ def states(id=None):
             states = None
     return render_template('9-states.html', states=states, id=id)
 
+
 @app.teardown_appcontext
 def close_session(response_or_exc):
     """close sqlalchemy session"""
