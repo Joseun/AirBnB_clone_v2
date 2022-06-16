@@ -1,52 +1,33 @@
 #!/usr/bin/python3
-# Fabfile to distribute an archive to a web server.
-import os.path
-from fabric.api import env
-from fabric.api import put
-from fabric.api import run
+"""
+deploy web_static
+"""
 
-env.hosts = ["3.236.213.10", "3.93.74.186"]
-env.user = "ubuntu"
+from __future__ import with_statement
+from fabric.api import local, run, put, env, settings
+from os import path
 
 
+env.user = 'ubuntu'
+env.hosts = ['34.148.87.245', '3.231.218.82']
 
 
 def do_deploy(archive_path):
-    """Distributes an archive to a web server.
-    Args:
-        archive_path (str): The path of the archive to distribute.
-    Returns:
-        If the file doesn't exist at archive_path or an error occurs - False.
-        Otherwise - True.
-    """
-    if os.path.isfile(archive_path) is False:
-        return False
-    file = archive_path.split("/")[-1]
-    name = file.split(".")[0]
+    """function to use fabric to deploy a directory"""
 
-    if put(archive_path, "/tmp/{}".format(file)).failed is True:
+    if archive_path == '':
         return False
-    if run("rm -rf /data/web_static/releases/{}/".
-           format(name)).failed is True:
+    if not path.exists(archive_path):
         return False
-    if run("mkdir -p /data/web_static/releases/{}/".
-           format(name)).failed is True:
-        return False
-    if run("tar -xzf /tmp/{} -C /data/web_static/releases/{}/".
-           format(file, name)).failed is True:
-        return False
-    if run("rm /tmp/{}".format(file)).failed is True:
-        return False
-    if run("mv /data/web_static/releases/{}/web_static/* "
-           "/data/web_static/releases/{}/".format(name, name)).failed is True:
-        return False
-    if run("rm -rf /data/web_static/releases/{}/web_static".
-           format(name)).failed is True:
-        return False
-    if run("rm -rf /data/web_static/current").failed is True:
-        return False
-    if run("ln -s /data/web_static/releases/{}/ /data/web_static/current".
-           format(name)).failed is True:
-        return False
-    print('New version deployed!')
-    return True
+    arc_file = archive_path.split('/')
+    arc_file = arc_file[len(arc_file) - 1]
+    folder_name = (arc_file.split('.'))[0]
+    unzip_path = '/data/web_static/releases/{}'.format(folder_name)
+    put(archive_path, '/tmp/')
+    run('sudo mkdir -p {}'.format(unzip_path))
+    run('sudo tar -zxf /tmp/{} -C {}'.format(arc_file, unzip_path))
+    run('sudo mv {}/web_static/* {}'.format(unzip_path, unzip_path))
+    run('sudo rm -rf {}/web_static'.format(unzip_path))
+    run('sudo rm /tmp/{}'.format(arc_file))
+    run('sudo rm -rf /data/web_static/current')
+    run('sudo ln -s {} /data/web_static/current'.format(unzip_path))

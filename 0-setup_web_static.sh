@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
-# Sets up a web server for deployment of web_static.
+#Bash script to prepare web servers for deployment of web_static
 
-apt-get -y update 
-apt-get -y install nginx
-ufw allow 'Nginx HTTP'
-ufw allow 'OpenSSH'
-service nginx start
-mkdir -p /data/web_static/shared/ /data/web_static/releases/test/
+if [ ! -x "$(command -v nginx)" ]; then
+	sudo apt-get -y update
+	sudo apt-get -y install nginx
+	sudo ufw --force enable
+	sudo ufw allow 'Nginx HTTP'
+	sudo ufw allow 22
+fi
+sudo mkdir -p /data/
+sudo mkdir -p /data/web_static/
+sudo mkdir -p /data/web_static/releases/
+sudo mkdir -p /data/web_static/shared/
+sudo mkdir -p /data/web_static/releases/test/
 echo "<html>
   <head>
   </head>
@@ -14,8 +20,13 @@ echo "<html>
     Holberton School
   </body>
 </html>" > /data/web_static/releases/test/index.html
-ln -sf /data/web_static/releases/test /data/web_static/current
-chown -R ubuntu /data/
-chgrp -R ubuntu /data/
-sed -i '/listen 80 default_server/a location /hbnb_static/ {\n\t\t alias /data/web_static/current;\n\tindex index.html index.htm;\n\t}' /etc/nginx/sites-available/default
-service nginx restart
+if [[ -L "/data/web_static/current/test" ]]; then
+	sudo unlink /data/web_static/current/
+else
+	sudo ln -s /data/web_static/releases/test/ /data/web_static/current
+	unlink /data/web_static/current/test
+fi
+sudo chown -R ubuntu:ubuntu /data/
+sudo chmod 777 /etc/nginx/sites-available/default
+sudo sed -i "0,/location \/ {/s/location \/ {/location \/hbnb_static\/ {\n\t\talias \/data\/web_static\/current\/;/" /etc/nginx/sites-available/default
+sudo service nginx restart

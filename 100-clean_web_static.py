@@ -1,16 +1,17 @@
 #!/usr/bin/python3
 """
-compress and deploy web_static
+remove old archives from deployment
 """
 
+
 from __future__ import with_statement
-from fabric.api import local, run, put, env, settings
+from fabric.api import local, run, put, env, settings, sudo
 from os import path
 from datetime import datetime
 
 
 env.user = 'ubuntu'
-env.hosts = ['3.236.213.10', '3.93.74.186']
+env.hosts = ['34.148.87.245', '3.231.218.82']
 
 
 def do_deploy(archive_path):
@@ -60,3 +61,15 @@ def deploy():
         return False
     deploy = do_deploy(compress)
     return deploy
+
+
+def do_clean(number=0):
+    """function to delete archives"""
+
+    number = int(number)
+    if number == 0:
+        number += 1
+    num = str(number)
+    path = '/data/web_static/releases'
+    sudo('realpath {}/* | head -n -{} | xargs rm -rf --'.format(path, num))
+    local('realpath versions/* | head -n -{} | xargs rm -rf --'.format(num))

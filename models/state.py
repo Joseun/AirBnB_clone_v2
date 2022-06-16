@@ -10,6 +10,7 @@ class State(BaseModel, Base):
 	""" State class """
 	__tablename__ = 'states'
 	name =  Column(String(128), nullable=False)
+	cities = []
 	
 	if getenv('HBNB_TYPE_STORAGE') == 'db':
 		cities = relationship("City",  back_populates="state",
@@ -22,8 +23,7 @@ class State(BaseModel, Base):
 			from models import storage
 			from models.city import City
 
-			city_list = []
-			for city in storage.all(City).values():
-				if city.state_id == self.id:
-					city_list.append(city)
+			all_objects = storage.all(City)
+			city_list = [v for k, v in all_objects.items()
+			 		     if v.state_id == self.id]
 			return city_list

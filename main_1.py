@@ -78,11 +78,11 @@ if state_id_1 is None or state_id_1 == "":
 city_id_1 = exec_command(my_console, "create City state_id=\"{}\" name=\"Fremont\"".format(state_id_1))
 if city_id_1 is None or city_id_1 == "":
     print("FAIL: Can't create City 1")
-
+print("OK: city {} created with state_id={}".format(city_id_1, city_id_1.state_id))
 city_id_2 = exec_command(my_console, "create City state_id=\"{}\" name=\"Napa\"".format(state_id_1))
 if city_id_2 is None or city_id_2 == "":
     print("FAIL: Can't create City 2")
-
+print("OK: city {} created with state_id={}".format(city_id_2, state_id_1))
 state_id_2 = exec_command(my_console, "create State name=\"California2\"")
 if state_id_2 is None or state_id_2 == "":
     print("FAIL: Can't create State 2")
@@ -90,7 +90,7 @@ if state_id_2 is None or state_id_2 == "":
 city_id_3 = exec_command(my_console, "create City state_id=\"{}\" name=\"Sonoma\"".format(state_id_2))
 if city_id_3 is None or city_id_3 == "":
     print("FAIL: Can't create City 3")
-
+print("OK: city created with state_id={}".format(state_id_2))
 
 """
  Tests
@@ -118,6 +118,7 @@ if state_1 is None:
     state_1 = all_states.get("State.{}".format(state_id_1))
 if state_1 is not None:
     all_cities = state_1.cities
+    print(all_cities)
     if len(all_cities) != 2:
         print("FAIL: {} cities found instead of 2".format(len(all_cities)))
 
@@ -127,7 +128,7 @@ if state_1 is not None:
             city_ids_to_search.remove(city.id)
 
     if len(city_ids_to_search) > 0:
-        print("FAIL: {} missing".format(city_ids_to_search))
+        print("FAIL: {} missing with state id {}".format(city_ids_to_search))
 else:
     print("FAIL: State 1 not found")
   
